@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Endpoint, type: :model do
   subject {
     described_class.new(verb: "POST",
-                        path: "/endpoints"
+                        path: "/endpoints")
   }
 
   it "is valid with valid attributes" do
@@ -19,7 +19,14 @@ RSpec.describe Endpoint, type: :model do
     subject.path = nil
     expect(subject).to_not be_valid
   end
-  
-  it "is not valid withour a valid verb"
-  it "is not valid withour a valid path"
+
+  it "is not valid withour a valid verb" do 
+    subject.verb = "post"
+    expect(subject).to_not be_valid
+  end
+
+  it "is not valid withour a valid path" do
+    subject.path = "endpoints"
+    expect(subject).to_not be_valid
+  end
 end
