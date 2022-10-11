@@ -7,27 +7,33 @@ class EndpointsController < BaseApiController
 
   def create
     @endpoint = Endpoint.new(endpoint_params)
-    render :endpoint, status: @endpoint.save ? :created : :unprocessable_entity
+    render_json_endpoint(@endpoint.save ? :created : :unprocessable_entity)
   end
 
   def update
     @endpoint.update(endpoint_params)
-    render :endpoint, status: :ok
+    render_json_endpoint :ok
   end
 
   def destroy
     @endpoint.destroy!
-    render :endpoint, status: :no_content
+    render_json_endpoint :no_content
   end
 
   private
   def endpoint_params
     endp_params = params.require(:data).require(:attributes)
     endp_params = endp_params.permit(:path,:verb)
-    endp_params[:response_attributes] = params.require(:data).require(:attributes)[:response] 
-    endp_params[:response_attributes][:headers].permit! if endp_params[:response_attributes][:headers]
-    endp_params[:response_attributes].permit!
+    permit_response_attributes(endp_params)
     endp_params
+  end
+
+  def permit_response_attributes response_params
+    response_params[:response_attributes] =  params.require(:data).require(:attributes)[:response] if params.require(:data).require(:attributes)[:response]
+    if response_params[:response_attributes] && response_params[:response_attributes][:headers] 
+      response_params[:response_attributes][:headers].permit! 
+      response_params[:response_attributes].permit!
+    end
   end
 
   def find_endpoint

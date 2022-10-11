@@ -8,4 +8,8 @@ class BaseApiController < ActionController::API
       }
     ]},status: :not_found
   end
+
+  def render_json_endpoint status=:ok
+    render :endpoint, status: status
+  end
 end
