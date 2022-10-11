@@ -22,18 +22,18 @@ class EndpointsController < BaseApiController
 
   private
   def endpoint_params
-    endp_params = params.require(:data).require(:attributes)
-    endp_params = endp_params.permit(:path,:verb)
-    permit_response_attributes(endp_params)
-    endp_params
+    if params[:data].present? && params[:data][:attributes].present?
+      endp_params = params.require(:data).require(:attributes)
+      endp_params = endp_params.permit(:path,:verb)
+      permit_response_attributes(endp_params)
+      endp_params
+    end
   end
 
   def permit_response_attributes response_params
     response_params[:response_attributes] =  params.require(:data).require(:attributes)[:response] if params.require(:data).require(:attributes)[:response]
-    if response_params[:response_attributes] && response_params[:response_attributes][:headers] 
-      response_params[:response_attributes][:headers].permit! 
-      response_params[:response_attributes].permit!
-    end
+    response_params[:response_attributes][:headers].permit! if response_params[:response_attributes] && response_params[:response_attributes][:headers] 
+    response_params[:response_attributes].permit! if response_params[:response_attributes]
   end
 
   def find_endpoint
